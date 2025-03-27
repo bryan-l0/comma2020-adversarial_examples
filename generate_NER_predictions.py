@@ -1,5 +1,3 @@
-import pandas as pd
-import random
 from flair.data import Sentence
 from flair.models import SequenceTagger
 from tqdm import tqdm
@@ -49,7 +47,7 @@ if __name__ == "__main__":
     split = "test"
     df = dh.select_by_datasplit(df, split)
     # load the NER tagger
-    model = "pos"
+    model = "ner"
     tagger = SequenceTagger.load(model)
     # Get predictions
     ner_df = detect_entities(df, tagger, model)

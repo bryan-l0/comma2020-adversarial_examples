@@ -1,4 +1,3 @@
-import pandas as pd
 import random
 import pickle
 from tqdm import tqdm
@@ -112,7 +111,7 @@ VECTORS_LIST = vectorize_entities(entities_list, fasttext_emb)
 def find_closest_embeddings(vectors, embedding):
     return sorted(
         vectors.keys(),
-        key=lambda word: spatial.distance.euclidean(vectors[word], embedding),
+        key=lambda word: spatial.distance.euclidean(vectors[word].cpu().numpy(), embedding.cpu().numpy()),
     )
 
 
@@ -145,7 +144,7 @@ def generate_ner_perturbations(df, entity_name=""):
         entities = row["ner"]["entities"]
         adv_examples = []
         for entity in entities:
-            ner_type = entity[NER_TYPE]
+            ner_type = entity['labels'][0].value
             if entity_name and ner_type != entity_name:
                 pass
             else:
@@ -199,7 +198,7 @@ def generate_ner_examples(df, entity_name=""):
         entities = row["ner"]["entities"]
         adv_examples = []
         for entity in entities:
-            ner_type = entity[NER_TYPE]
+            ner_type = entity['labels'][0].value
             if entity_name and ner_type != entity_name:
                 pass
             else:
@@ -270,7 +269,7 @@ def generate_adv_examples(entities, typeof, sent, speculative=False):
 
     adv_examples = []
     # Filter entities by its type
-    selected_entities = [en for en in entities if en[NER_TYPE] == typeof]
+    selected_entities = [en for en in entities if en['labels'][0].value == typeof]
     if typeof == "ADJ":
         # We eliminate the adjectives in the blacklist
         selected_entities = [
@@ -311,9 +310,11 @@ def gen_conj_examples(entities, sent):
         list of new adversarial examples
     """
     adv_examples = []
+    if len(entities) == 0:
+        return adv_examples
     # Beggining of the sentence
     entity = entities[0]
-    if entity[NER_TYPE] != "ADV":
+    if entity['labels'][0].value != "ADV":
         changes = random.sample(conj_list, k=3)
         for change in changes:
             example = change + ", " + sent
@@ -343,11 +344,11 @@ def adverbs_perturbations(df):
     conjunctions_examples = []
     for index, row in tqdm(df.iterrows(), total=len(df.index)):
         sent = row["sentence"]
-        entities = row["pos"]["entities"]
+        entities = row["ner"]["entities"]
         adv_examples = []
         spec_examples = []
         conj_examples = gen_conj_examples(entities, sent)
-        adverbs_in_sent = [ent for ent in entities if ent[NER_TYPE] == "ADV"]
+        adverbs_in_sent = [ent for ent in entities if ent['labels'][0].value == "ADV"]
         exchange_adverb = False
         # Exchanges the adverbs already in the sentence
         for adv in adverbs_in_sent:

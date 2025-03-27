@@ -1,3 +1,5 @@
+This repo is forked from [https://gitlab.com/tomaye/comma2020-adversarial_examples](https://gitlab.com/tomaye/comma2020-adversarial_examples). I have simply updated the code to work on my machine, as well as added a pickle file of the perturbed IBM dataset. To run the code, setup the environment per [ENV_SETUP.md](ENV_SETUP.md).
+
 # Generating Adversarial Examples for Topic-dependent Argument Classification
 
 In this repository you find the code which was used for the experiments in our paper [Generating Adversarial Examples for Topic-dependent Argument Classification](https://hal.archives-ouvertes.fr/hal-02933266/document) (COMMA 2020).

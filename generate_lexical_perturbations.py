@@ -84,8 +84,8 @@ def replace_postag(df, pos="a", replace_with="synonym"):
             new_example = tokens.copy()
             for change in candidates:
                 new_example[idx] = change
-                new_example = " ".join(new_example)
-                examples.append(new_example)
+            new_example = " ".join(new_example)
+            examples.append(new_example)
         adversarial_examples.append(examples)
     return adversarial_examples
 
